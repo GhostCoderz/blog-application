@@ -7,7 +7,6 @@ import com.ghostcoderz.blog_application.repository.UserRepo;
 import com.ghostcoderz.blog_application.service.serviceInterface.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = dtoToUser(userDto);
-        userRepo.save(user);
+        this.userRepo.save(user);
         return userToDto(user);
     }
 
@@ -39,14 +38,14 @@ public class UserServiceImpl implements UserService {
         userInDB.setEmail(user.getEmail());
         userInDB.setPassword(user.getPassword());
         userInDB.setAbout(user.getAbout());
-        userRepo.save(userInDB);
+        this.userRepo.save(userInDB);
 
         return userToDto(userInDB);
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = userRepo.findById(userId).
+        User user = this.userRepo.findById(userId).
                 orElseThrow(() -> new ResourceNotFoundException(
                         "User", "id" , userId));
         return userToDto(user);
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAllUsers() {
-        return userRepo.findAll().stream()
+        return this.userRepo.findAll().stream()
                 .map(this::userToDto)
                 .collect(Collectors.toList());
     }
@@ -62,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         try {
-            userRepo.deleteById(userId);
+            this.userRepo.deleteById(userId);
         } catch(Exception e) {
             throw new ResourceNotFoundException("User", "id", userId);
         }
