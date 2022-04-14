@@ -1,4 +1,4 @@
-# Blog-Application
+# Blog Application API
 
 This is a Blog Application API made in Java
 
