@@ -63,7 +63,8 @@ public class UserServiceImpl implements UserService {
         try {
             this.userRepo.deleteById(userId);
         } catch(Exception e) {
-            throw new ResourceNotFoundException("User", "id", userId);
+            throw new ResourceNotFoundException(
+                    "User", "id", userId);
         }
     }
 
