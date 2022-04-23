@@ -5,11 +5,15 @@ import com.ghostcoderz.blog_application.entity.Post;
 import com.ghostcoderz.blog_application.entity.User;
 import com.ghostcoderz.blog_application.exceptions.ResourceNotFoundException;
 import com.ghostcoderz.blog_application.payload.PostDto;
+import com.ghostcoderz.blog_application.payload.PostResponse;
 import com.ghostcoderz.blog_application.repository.CategoryRepo;
 import com.ghostcoderz.blog_application.repository.PostRepo;
 import com.ghostcoderz.blog_application.repository.UserRepo;
 import com.ghostcoderz.blog_application.service.serviceInterface.PostService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -81,10 +85,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        return this.postRepo.findAll().stream()
-                .map(this::postToDto)
-                .collect(Collectors.toList());
+    public PostResponse getAllPosts(Integer pageNumber, Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> posts = this.postRepo.findAll(pageable);
+
+        List<PostDto> content = posts.stream()
+                .map(this::postToDto).toList();
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNumber(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setLastPage(posts.isLast());
+
+        return postResponse;
+
     }
 
     @Override

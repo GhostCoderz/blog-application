@@ -2,12 +2,12 @@ package com.ghostcoderz.blog_application.controller;
 
 import com.ghostcoderz.blog_application.payload.ApiResponse;
 import com.ghostcoderz.blog_application.payload.PostDto;
+import com.ghostcoderz.blog_application.payload.PostResponse;
 import com.ghostcoderz.blog_application.service.serviceInterface.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -26,8 +26,7 @@ public class PostController {
             @RequestBody PostDto postDto,
             @RequestParam(name = "userId") Long userId,
             @RequestParam(name = "categoryId") Integer categoryId
-            )
-    {
+    ){
         PostDto createdPost = this.postService.createPost(postDto, userId, categoryId);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
@@ -45,8 +44,20 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPosts(){
-        List<PostDto> allPosts = this.postService.getAllPosts();
+    public ResponseEntity<PostResponse> getAllPosts(
+            @RequestParam(
+                    value = "page",
+                    defaultValue = "0",
+                    required = false
+            )Integer pageNumber,
+            @RequestParam(
+                    value = "pageSize",
+                    defaultValue = "10",
+                    required = false
+            ) Integer pageSize
+    ){
+        PostResponse allPosts = this.postService.
+                getAllPosts(pageNumber, pageSize);
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 
@@ -63,6 +74,7 @@ public class PostController {
                 new ApiResponse("Post is successfully deleted", true),
                 HttpStatus.OK);
     }
+
     @PutMapping("/posts/{postId}")
     public ResponseEntity<ApiResponse> updatePost(
             @RequestBody PostDto postDto,
