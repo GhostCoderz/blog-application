@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     ){
         HashMap<String, String> errorList = new HashMap<>();
 
-        ex.getAllErrors().stream().forEach(e -> {
+        ex.getAllErrors().forEach(e -> {
             String objectName = ((FieldError)e).getField();
             String message = e.getDefaultMessage();
             errorList.put(objectName, message);
