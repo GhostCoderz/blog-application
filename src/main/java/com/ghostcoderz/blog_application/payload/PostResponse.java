@@ -15,6 +15,6 @@ public class PostResponse {
     private long pageSize;
     private long totalPages;
     private long totalElements;
-    private boolean isLastPage;
+    private boolean isLast;
 
 }

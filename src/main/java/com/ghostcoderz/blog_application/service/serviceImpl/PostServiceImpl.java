@@ -14,11 +14,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -85,9 +85,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse getAllPosts(Integer pageNumber, Integer pageSize) {
+    public PostResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Sort sort = Sort.by(sortBy);
+        sort = sortDir.equalsIgnoreCase("asc")? sort.ascending(): sort.descending();
+
+        Pageable pageable = PageRequest.of(
+                pageNumber, pageSize, sort);
         Page<Post> posts = this.postRepo.findAll(pageable);
 
         List<PostDto> content = posts.stream()
@@ -99,7 +103,7 @@ public class PostServiceImpl implements PostService {
         postResponse.setPageSize(posts.getSize());
         postResponse.setTotalPages(posts.getTotalPages());
         postResponse.setTotalElements(posts.getTotalElements());
-        postResponse.setLastPage(posts.isLast());
+        postResponse.setLast(posts.isLast());
 
         return postResponse;
 
@@ -116,32 +120,63 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getPostByCategory(Integer categoryId) {
+    public PostResponse getPostByCategory(
+            Integer categoryId,
+            Integer pageNumber,
+            Integer pageSize
+    ){
         Category category = this.categoryRepo.findById(categoryId).
                 orElseThrow(() -> new ResourceNotFoundException(
                         "Category", "id", categoryId.longValue()));
-        List<Post> posts = this.postRepo.findByCategory(category);
-        List<PostDto> postDtos = posts.stream()
-                .map(this::postToDto).
-                collect(Collectors.toList());
-        return postDtos;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> posts = this.postRepo.findByCategory(category, pageable);
+
+        List<PostDto> content = posts.stream()
+                .map(this::postToDto).toList();
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNumber(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
     }
 
     @Override
-    public List<PostDto> getPostByUser(Long userId) {
+    public PostResponse getPostByUser(
+            Long userId,
+            Integer pageNumber,
+            Integer pageSize
+    ){
         User user = this.userRepo.findById(userId).
                 orElseThrow(() -> new ResourceNotFoundException(
                         "User", "id", userId));
-        List<Post> posts = this.postRepo.findByUser(user);
-        List<PostDto> postDtos = posts.stream()
-                .map(this::postToDto).
-                collect(Collectors.toList());
-        return postDtos;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> posts = this.postRepo.findByUser(user, pageable);
+
+        List<PostDto> content = posts.stream()
+                .map(this::postToDto).toList();
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(content);
+        postResponse.setPageNumber(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setLast(posts.isLast());
+
+        return postResponse;
     }
 
     @Override
     public List<PostDto> searchPosts(String keyword) {
-        return null;
+        List<Post> posts = this.postRepo.searchByTitle("%"+ keyword + "%");
+        return posts.stream().map(this::postToDto).toList();
     }
 
     private PostDto postToDto(Post post){

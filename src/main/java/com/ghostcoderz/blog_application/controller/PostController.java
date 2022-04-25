@@ -1,5 +1,6 @@
 package com.ghostcoderz.blog_application.controller;
 
+import com.ghostcoderz.blog_application.config.AppConstants;
 import com.ghostcoderz.blog_application.payload.ApiResponse;
 import com.ghostcoderz.blog_application.payload.PostDto;
 import com.ghostcoderz.blog_application.payload.PostResponse;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -32,14 +34,41 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable Long userId){
-        List<PostDto> postsByUser = this.postService.getPostByUser(userId);
+    public ResponseEntity<PostResponse> getPostsByUser(
+            @PathVariable Long userId,
+            @RequestParam(
+                    value = "page",
+                    defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,
+                    required = false
+            )Integer pageNumber,
+            @RequestParam(
+                    value = "pageSize",
+                    defaultValue = AppConstants.DEFAULT_PAGE_SIZE,
+                    required = false
+            ) Integer pageSize
+    ){
+        PostResponse postsByUser = this.postService.
+                getPostByUser(userId, pageNumber, pageSize);
         return new ResponseEntity<>(postsByUser, HttpStatus.OK);
     }
 
     @GetMapping("category/{categoryId}/posts")
-    public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable Integer categoryId){
-        List<PostDto> postsByCategory = this.postService.getPostByCategory(categoryId);
+    public ResponseEntity<PostResponse> getPostsByCategory(
+            @PathVariable Integer categoryId,
+            @RequestParam(
+                    value = "page",
+                    defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,
+                    required = false
+            )Integer pageNumber,
+            @RequestParam(
+                    value = "pageSize",
+                    defaultValue = AppConstants.DEFAULT_PAGE_SIZE,
+                    required = false
+            ) Integer pageSize
+    ){
+        PostResponse postsByCategory = this.postService.
+                getPostByCategory(categoryId, pageNumber, pageSize);
+
         return new ResponseEntity<>(postsByCategory, HttpStatus.OK);
     }
 
@@ -47,17 +76,27 @@ public class PostController {
     public ResponseEntity<PostResponse> getAllPosts(
             @RequestParam(
                     value = "page",
-                    defaultValue = "0",
+                    defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,
                     required = false
             )Integer pageNumber,
             @RequestParam(
                     value = "pageSize",
-                    defaultValue = "10",
+                    defaultValue = AppConstants.DEFAULT_PAGE_SIZE,
                     required = false
-            ) Integer pageSize
+            ) Integer pageSize,
+            @RequestParam(
+                    value = "sortBy",
+                    defaultValue = AppConstants.DEFAULT_SORT_BY,
+                    required = false
+            ) String sortBy,
+            @RequestParam(
+                    value = "sortDir",
+                    defaultValue = AppConstants.DEFAULT_SORT_DIR,
+                    required = false
+            ) String sortDir
     ){
         PostResponse allPosts = this.postService.
-                getAllPosts(pageNumber, pageSize);
+                getAllPosts(pageNumber, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 
@@ -85,6 +124,14 @@ public class PostController {
                         "Post is updated successfully",
                         true),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("/posts/search/{keywords}")
+    public ResponseEntity<List<PostDto>> searchByTitle(
+            @PathVariable("keywords") String keywords
+    ){
+        List<PostDto> result = this.postService.searchPosts(keywords);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }
