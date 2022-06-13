@@ -3,7 +3,6 @@ package com.ghostcoderz.blog_application.payload;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -13,7 +12,7 @@ import javax.validation.constraints.Size;
 @Getter
 public class UserDto {
 
-    private long id;
+    private long userId;
 
     @NotEmpty
     @Size(min = 2,
