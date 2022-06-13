@@ -1,16 +1,16 @@
 package com.ghostcoderz.blog_application.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
 @Setter
 @Getter
-@NoArgsConstructor
 public class Post {
 
     @Id
@@ -35,5 +35,8 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Set<Comment> comments;
 
 }
