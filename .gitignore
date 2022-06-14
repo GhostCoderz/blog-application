@@ -3,6 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+images/
+EER Diagram of DB.mwb
+EER Diagram of DB.mwb.bak
 
 ### STS ###
 .apt_generated
