@@ -5,8 +5,10 @@ import com.ghostcoderz.blog_application.payload.UserDto;
 import com.ghostcoderz.blog_application.service.serviceInterface.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class UserController {
     }
 
     // DELETE - Delete A User
+    //ADMIN Authority
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(
             @PathVariable Long userId
