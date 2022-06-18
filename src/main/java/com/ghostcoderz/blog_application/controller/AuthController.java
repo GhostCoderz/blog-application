@@ -1,5 +1,6 @@
 package com.ghostcoderz.blog_application.controller;
 
+import com.ghostcoderz.blog_application.exceptions.APIException;
 import com.ghostcoderz.blog_application.payload.JWTAuthRequest;
 import com.ghostcoderz.blog_application.payload.JWTAuthResponse;
 import com.ghostcoderz.blog_application.security.JWTTokenHelper;
@@ -56,7 +57,7 @@ public class AuthController {
             this.authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         } catch (BadCredentialsException e){
             System.out.println("Invalid Login Details");
-            throw new Exception("Invalid username or password");
+            throw new APIException("Invalid username or password");
         }
 
     }
