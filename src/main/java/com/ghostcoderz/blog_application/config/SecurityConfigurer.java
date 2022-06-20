@@ -5,6 +5,7 @@ import com.ghostcoderz.blog_application.security.JWTAuthenticationEntryPoint;
 import com.ghostcoderz.blog_application.security.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -39,8 +40,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.
                 csrf().disable()
                 .authorizeHttpRequests( requests -> {
-                    requests.antMatchers("/api/v1/auth/login").permitAll();
-                    requests.antMatchers("/api/v1/post/image/**").permitAll();
+                    requests.antMatchers("/api/v1/auth/**").permitAll();
+                    requests.antMatchers(HttpMethod.GET).permitAll();
                     requests.anyRequest().authenticated();
                 })
                 .exceptionHandling( exceptionHandling ->
