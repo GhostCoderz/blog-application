@@ -3,7 +3,9 @@ package com.ghostcoderz.blog_application.controller;
 import com.ghostcoderz.blog_application.exceptions.APIException;
 import com.ghostcoderz.blog_application.payload.JWTAuthRequest;
 import com.ghostcoderz.blog_application.payload.JWTAuthResponse;
+import com.ghostcoderz.blog_application.payload.UserDto;
 import com.ghostcoderz.blog_application.security.JWTTokenHelper;
+import com.ghostcoderz.blog_application.service.serviceInterface.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,19 +23,23 @@ public class AuthController {
     private final JWTTokenHelper jwtTokenHelper;
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
-    public AuthController(JWTTokenHelper jwtTokenHelper, UserDetailsService userDetailsService, AuthenticationManager authenticationManager) {
+    public AuthController(JWTTokenHelper jwtTokenHelper,
+                          UserDetailsService userDetailsService,
+                          AuthenticationManager authenticationManager,
+                          UserService userService
+    ) {
         this.jwtTokenHelper = jwtTokenHelper;
         this.userDetailsService = userDetailsService;
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<JWTAuthResponse> createToken(
             @RequestBody JWTAuthRequest request
             ) throws Exception {
-
-        System.out.println("Request Details : \n" + request.getUsername() + "\n" + request.getPassword());
 
         this.authenticate(request.getUsername(), request.getPassword());
 
@@ -59,6 +65,13 @@ public class AuthController {
             System.out.println("Invalid Login Details");
             throw new APIException("Invalid username or password");
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+
+        UserDto registeredUser = this.userService.registerNewUser(userDto);
+        return new ResponseEntity<>(registeredUser, HttpStatus.OK);
 
     }
 

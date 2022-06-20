@@ -1,11 +1,15 @@
 package com.ghostcoderz.blog_application.service.serviceImpl;
 
+import com.ghostcoderz.blog_application.config.AppConstants;
+import com.ghostcoderz.blog_application.entity.Role;
 import com.ghostcoderz.blog_application.entity.User;
 import com.ghostcoderz.blog_application.exceptions.ResourceNotFoundException;
 import com.ghostcoderz.blog_application.payload.UserDto;
+import com.ghostcoderz.blog_application.repository.RoleRepo;
 import com.ghostcoderz.blog_application.repository.UserRepo;
 import com.ghostcoderz.blog_application.service.serviceInterface.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,10 +19,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepo roleRepo;
 
-    public UserServiceImpl(UserRepo userRepo, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepo userRepo, ModelMapper modelMapper, PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
         this.userRepo = userRepo;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepo = roleRepo;
     }
 
     @Override
@@ -66,6 +74,25 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException(
                     "User", "id", userId);
         }
+    }
+
+
+    @Override
+    public UserDto registerNewUser(UserDto userDto) {
+        User user = dtoToUser(userDto);
+
+        //Encoded the password
+        String encodedPassword = this.passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        //adding roles
+        Role role = this.roleRepo.findById(AppConstants.NORMAL_USER_ROLE).get();
+
+        user.getRoles().add(role);
+
+        User newUser = this.userRepo.save(user);
+
+        return userToDto(newUser);
     }
 
     private UserDto userToDto(User user){
