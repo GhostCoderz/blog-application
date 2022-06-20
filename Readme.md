@@ -6,7 +6,7 @@ This is a Blog Application API made in Java
 The various technologies used are :
 
 1. Spring Boot
-2. MySQL Database
-3. Lombok
-4. Git
-5. Log4J
+2. Spring Data JPA
+3. MySQL Database
+4. Spring Security(JWT Authentication)
+5. Swagger
