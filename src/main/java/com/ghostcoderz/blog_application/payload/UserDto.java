@@ -1,9 +1,9 @@
 package com.ghostcoderz.blog_application.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -32,7 +32,7 @@ public class UserDto {
             max = 10,
             message = "Password must be between minimum of 3 characters " +
                     "and maximum of 10 characters")
-    @JsonIgnore(value = true)
+//    @JsonIgnore(value = true)
     private String password;
 
     @NotEmpty
