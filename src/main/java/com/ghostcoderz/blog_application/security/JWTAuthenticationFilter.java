@@ -34,7 +34,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         // 1. Get Token from Request
         String requestToken = request.getHeader("Authorization");
-        System.out.println("Request Token : " + requestToken);
 
         // JWT token is like :
         //Bearer <token>
