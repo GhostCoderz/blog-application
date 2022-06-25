@@ -3,6 +3,7 @@ package com.ghostcoderz.blog_application;
 import com.ghostcoderz.blog_application.config.AppConstants;
 import com.ghostcoderz.blog_application.entity.Role;
 import com.ghostcoderz.blog_application.repository.RoleRepo;
+import com.ghostcoderz.blog_application.utils.AppRunningThread;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -46,6 +47,9 @@ public class BlogApplication implements CommandLineRunner {
 		roles.add(normalRole);
 
 		List<Role> result = this.roleRepo.saveAll(roles);
+
+		AppRunningThread appRunningThread = new AppRunningThread();
+		appRunningThread.start();
 
 	}
 }
